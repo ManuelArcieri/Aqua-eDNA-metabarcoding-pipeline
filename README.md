@@ -1,6 +1,60 @@
 # Aqua-eDNA-metabarcoding-pipeline
 
-### Merge paired-end reads
+## I. Preliminary steps
+
+### 1. Taxonomy
+
+- **Website**: [SeaLifeBase](https://www.sealifebase.org/search.php)
+
+Having access to a curated list of species we might encounter in specific areas can tremendously increase the accuracy of taxonomic assignment when targeting short mitochondrial regions.
+For example, the Atlantic cod and Pacific cod share more than 99% of their mitochondrial DNA, and it might be impossible to distinguish them from the 12S subunit alone.
+By creating a list of acceptable taxa, we can filter out the noise caused by closely genetically related species residing far away from our collection area.
+
+We should aim to create a table of acceptable species containing at least two variables: the NCBI taxonomy ID and the corresponding scientific name.
+The common name can also be helpful for data visualisation, together with other project-specific features. This is a small example:
+
+| **TaxId** | **Scientific_name**   | **Common_name**        | **Category**     |
+|-----------|-----------------------|------------------------|------------------|
+| `7748`	   | Lampetra fluviatilis	 | European river lamprey | 	Fishes          |
+| `7757`	   | Petromyzon marinus    | 	Sea lamprey           | 	Fishes          |
+| `7769`	   | Myxine glutinosa      | 	Atlantic hagfish      | 	Fishes          |
+| `28701`   | Fratercula arctica    | Atlantic puffin        | Birds            |
+| `30455`   | Fulmarus glacialis    | Northern fulmar        | Birds            |
+| `9707`    | Odobenus rosmarus     | Walrus                 | Marine mammals   |
+| `9711`    | Halichoerus grypus    | Gray seal              | Marine mammals   |
+| `9031`    | Gallus gallus         | Chicken                | Contamination    |
+| `9606`    | Homo sapiens          | Human                  | Contamination    |
+| `30501`   | Carcharias taurus     | Sand tiger shark       | Positive control |
+
+As a starting point, we used [SeaLifeBase](https://www.sealifebase.org/search.php) to get a list of common marine species residing in Denmark.
+We also included additional elements relevant to our study.
+Make sure to add natural contaminants, with genetic material stemming from human activities and sewage wastewater, as an example.
+We encountered a high amount of reads assigned to Humans, Chickens, Pigs, Domestic cattle, and Sheep.
+
+For reference, you can find the full table we used for our study [by clicking here](sample_data/acceptable_species.tsv).
+
+#### Core commands
+
+```bash
+# Merge forward and reverse reads
+pear \
+--forward-fastq "S0_L001_R1_001.fastq.gz" \
+--reverse-fastq "S0_L001_R2_001.fastq.gz" \
+--output "LibName" \
+--memory 100G \
+--threads 20
+
+# Delete unassembled and discarded reads
+rm --force "LibName.discarded.fastq"
+rm --force "LibName.unassembled.forward.fastq"
+rm --force "LibName.unassembled.reverse.fastq"
+```
+
+---------------------------------------------------
+
+## II. Metabarcoding and OTU formation
+
+### 1. Merge paired-end reads
 
 - **Tool**: [PEAR](https://cme.h-its.org/exelixis/web/software/pear/doc.html)
 - **Full script**: [1.pear.pbs.sh](scripts/1.pear.pbs.sh)
@@ -26,7 +80,7 @@ rm --force "LibName.unassembled.reverse.fastq"
 
 ---------------------------------------------------
 
-### Check quality of assembled reads
+### 2. Check quality of assembled reads
 
 - **Tool**: [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
 - **Full script**: [2.fastqc.pbs.sh](scripts/2.fastqc.pbs.sh)
@@ -46,7 +100,7 @@ fastqc \
 
 ---------------------------------------------------
 
-### Metabarcoding pipeline
+### 3. Metabarcoding pipeline
 
 - **Tools**: [Cutadapt](https://cutadapt.readthedocs.io/en/stable/), [OBITools](https://pythonhosted.org/OBITools/index.html), [BLAST](https://www.ncbi.nlm.nih.gov/books/NBK279684/table/appendices.T.blastn_application_options/)
 - **Full script**: [3.metabarcoding.pbs.sh](scripts/3.metabarcoding.pbs.sh)
@@ -183,3 +237,6 @@ python3 \
 ```
 
 </details>
+
+## III. Data analysis and plots
+
