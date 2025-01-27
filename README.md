@@ -33,22 +33,33 @@ We encountered a high amount of reads assigned to Humans, Chickens, Pigs, Domest
 
 For reference, you can find the full table we used for our study [by clicking here](sample_data/acceptable_species.tsv).
 
-#### Core commands
+#### Iterative refinement
 
-```bash
-# Merge forward and reverse reads
-pear \
---forward-fastq "S0_L001_R1_001.fastq.gz" \
---reverse-fastq "S0_L001_R2_001.fastq.gz" \
---output "LibName" \
---memory 100G \
---threads 20
+As part of the metabarcoding pipeline, you will run BLAST on your sequences. You can inspect the raw results to select high-frequency OTUs that couldn't be assigned to any taxonomic group.
+Here's an example:
 
-# Delete unassembled and discarded reads
-rm --force "LibName.discarded.fastq"
-rm --force "LibName.unassembled.forward.fastq"
-rm --force "LibName.unassembled.reverse.fastq"
-```
+| **OTU** | **Count** | **Prediction_rank** | **Prediction_s_name**  | **Prediction_c_name** | **...** |
+|---------|-----------|---------------------|------------------------|-----------------------|---------|
+| A       | 10260	    | Species	            | Clupea harengus        | 	Atlantic herring     | ...     |
+| B       | 9461	     | Species	            | Clupea harengus        | 	Atlantic herring     | ...     |
+| C       | 8342	     | Species	            | Bos taurus             | 	Domestic cattle      | ...     |
+| **D**   | **6104**	 | **NA**	             | **NA**                 | 	**NA**               | ...     |
+| E       | 5719	     | Species	            | Bos taurus             | 	Domestic cattle      | ...     |
+| F       | 5511	     | Species	            | Pleuronectes platessa	 | European plaice       | ...     |
+
+As you can see, OTU `D` wasn't assigned to any taxa.
+Usually, this is due to a missing species or haplotype in the list of acceptable elements or reference database.
+You can manually extract the DNA sequence from the FASTA file matching the unclassified OTU.
+Then, you can search it online using the [full NCBI database](https://blast.ncbi.nlm.nih.gov/Blast.cgi?PROGRAM=blastn&PAGE_TYPE=BlastSearch) (`blastn`) to determine the most likely species it belongs to.
+You can add it to your list and re-run the taxonomic assignment of all your OTUs.
+This procedure can be repeated until you end up with satisfying results.
+
+### 2. Reference database
+
+- **Website**: [MIDORI2](https://www.reference-midori.info/index.html)
+
+Having
+
 
 ---------------------------------------------------
 
