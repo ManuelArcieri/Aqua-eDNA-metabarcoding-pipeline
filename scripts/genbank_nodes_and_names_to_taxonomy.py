@@ -1,3 +1,8 @@
+# Source: https://github.com/Joseph7e/Assign-Taxonomy-with-BLAST
+# Author: Joseph Sevigny, edited by Manuel Arcieri
+# Affiliation: Hubbard Center for Genome Studies, University of New Hampshire
+# Date: 06/11/2018
+
 import sys
 
 names_file = sys.argv[1] #'/mnt/lustre/hcgs/joseph7e/databases/ncbi_taxonomy_db/names.dmp'#sys.argv[1]
