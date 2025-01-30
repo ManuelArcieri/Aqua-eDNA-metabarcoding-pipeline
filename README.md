@@ -6,11 +6,11 @@
 
 - **Website**: [SeaLifeBase](https://www.sealifebase.org/search.php)
 
-Having access to a curated list of species we might encounter in specific areas can tremendously increase the accuracy of taxonomic assignment when targeting short mitochondrial regions.
+Having access to a curated list of species you might encounter in specific areas can tremendously increase the accuracy of taxonomic assignment when targeting short mitochondrial regions.
 For example, the Atlantic cod and Pacific cod share more than 99% of their mitochondrial DNA, and it might be impossible to distinguish them from the 12S subunit alone.
-By creating a list of acceptable taxa, we can filter out the noise caused by closely genetically related species residing far away from our collection area.
+By creating a list of acceptable taxa, you can filter out the noise caused by closely genetically related species residing far away from our collection area.
 
-We should aim to create a table of acceptable species containing at least two variables: the NCBI taxonomy ID and the corresponding scientific name.
+You should aim to create a table of acceptable species containing at least two variables: the NCBI taxonomy ID and the corresponding scientific name.
 The common name can also be helpful for data visualisation, together with other project-specific features. This is a small example:
 
 | **TaxId** | **Scientific_name**   | **Common_name**        | **Category**     |
@@ -54,14 +54,87 @@ Then, you can search it online using the [full NCBI database](https://blast.ncbi
 You can add it to your list and re-run the taxonomic assignment of all your OTUs.
 This procedure can be repeated until you end up with satisfying results.
 
+---------------------------------------------------
+
 ### 2. Reference database
 
 - **Website**: [MIDORI2](https://www.reference-midori.info/index.html)
 
-Having
+A reference database contains known DNA sequences from various organisms.
+It is used for taxonomic assignment by comparing an unknown sequence with all those found in the database, producing similarity scores for the top matches.
+Many reference databases may have multiple haplotypes associated with a single species, potentially increasing the accuracy of predictions.
 
+The choice of a reference database depends on the targeted DNA regions and the scope of the project.
+In our case, we opted for [MIDORI2](https://www.reference-midori.info/index.html).
+It subsets the NCBI GenBank database, providing DNA and amino acid sequences for eukaryotic mitochondrial DNA regions.
+We targeted the 16S region for marine mammals, and the 12S region for bony fish and elasmobranchs.
 
 ---------------------------------------------------
+
+### 3. Creating a BLAST reference database (using MIDORI2)
+
+- **Tools**: [BLAST](https://www.ncbi.nlm.nih.gov/books/NBK279684/table/appendices.T.makeblastdb_application_opt/), [SeqKit](https://bioinf.shenwei.me/seqkit/)
+- **Full script**: [make-blast-database.pbs.sh](scripts/make-blast-database.pbs.sh)
+- **Additional files required**: FASTA reference sequences, list of acceptable species, [`genbank_nodes_and_names_to_taxonomy.py`](scripts/genbank_nodes_and_names_to_taxonomy.py)
+
+Once you have a list of acceptable species (e.g., [`acceptable_species.tsv`](sample_data/acceptable_species.tsv)) and a FASTA reference database (e.g., [MIDORI2](https://www.reference-midori.info/index.html) in QIIME format), you are ready to create
+a custom BLAST database that can be used for taxonomic assignment.
+
+All the steps are merged into a single script, [make-blast-database.pbs.sh](scripts/make-blast-database.pbs.sh), and are summarised below:
+
+1. Extract all haplotypes and taxa IDs contained in the reference database.
+2. Extract all acceptable taxa IDs from our TSV file.
+3. Filter out undesired species/haplotypes.
+4. Create a filtered FASTA file containing all acceptable haplotypes.
+5. Download the latest NCBI taxonomy dump and prepare it for later usage.
+6. Make a BLAST database from the filtered FASTA file and taxa IDs.
+
+### 4. Preparing the adapter files for Cutadapt
+
+- **Tool**: [Cutadapt](https://cutadapt.readthedocs.io/en/stable/guide.html#demultiplexing)
+
+As part of the metabarcoding pipeline, you will run Cutadapt twice to trim the primers and demultiplex samples based on their tags.
+A library may contain an arbitrary number of primers and tags. Thus, we need two files to list all of them.
+This is a simple process. You will need two FASTA files where each primer/tag is listed as a single record.
+
+The sequence can contain Cutadapt's special instructions.
+For example, the form `AAA...XXX` can be used to specify a linked adapter, where your target sequence (`...`) is surrounded by a forward (`AAA`) and reverse (`XXX`) adapter.
+
+In the FASTA files of the adapters, the header name must be unique and can be used to demultiplex different samples.
+
+Primers typically do not require specific identifiers.
+You can append a sequence number to differentiate them (e.g., [`LibDemo.primers.fasta`](sample_data/LibDemo.primers.fasta)):
+
+```text
+>primer1
+GTCGGTAAAACTCGTGCCAGC...CAAACTGGGATTAGATACCCCACTATG
+>primer2
+CATAGTGGGGTATCTAATCCCAGTTTG...GCTGGCACGAGTTTTACCGAC
+```
+
+On the other hand, tags are typically used to discriminate samples or experimental conditions.
+You can use more specific headers to simplify downstream data analysis (e.g., [`LibDemo.tags.fasta`](sample_data/LibDemo.tags.fasta)):
+
+```text
+>DanF_surface_1
+ACCGAGA...TCTCGGT
+>1600m_East_surface_1
+CGAAATG...CATTTCG
+>Ragnar_surface_1
+TGAACGG...CCGTTCA
+>Novana_shipwreck_surface_1
+CAACCTT...AAGGTTG
+```
+
+Cutadapt will append the tag and primer IDs to the sequence headers during demultiplexing.
+These fields are kept for subsequent analyses and can be inspected at any time. Here's an example:
+
+```text
+@EXAMPLE1 sample=1600m_East_surface_1; tag_matches=CGAAATG,CATTTCG; primer=primer1; primer_matches=GTCGGTAAAACTCGTGCCAGC,CAAACTGGGATTAGATAC
+CACCACACGATTAACCCGAGCTAATGGAACT
++
+F/FF6FAFF//F/FFFFF6FFFFFFAFF/F/
+```
 
 ## II. Metabarcoding and OTU formation
 
@@ -115,7 +188,7 @@ fastqc \
 
 - **Tools**: [Cutadapt](https://cutadapt.readthedocs.io/en/stable/), [OBITools](https://pythonhosted.org/OBITools/index.html), [BLAST](https://www.ncbi.nlm.nih.gov/books/NBK279684/table/appendices.T.blastn_application_options/)
 - **Full script**: [3.metabarcoding.pbs.sh](scripts/3.metabarcoding.pbs.sh)
-- **Additional files required**: adapter files, BLAST database, taxonomy information, [`taxonomy_assignment_BLAST.py`](scripts/taxonomy_assignment_BLAST.py)
+- **Additional files required**: adapter files, BLAST database, taxonomy dump, [`taxonomy_assignment_BLAST.py`](scripts/taxonomy_assignment_BLAST.py)
 
 This is the core pipeline for metabarcoding and taxonomic assignment. It can be split into the following steps:
 

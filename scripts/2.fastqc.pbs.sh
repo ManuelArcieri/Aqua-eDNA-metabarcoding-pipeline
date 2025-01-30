@@ -19,7 +19,11 @@ module load fastqc/0.11.9
 
 # Set input and output folders
 fastq_dir="1_merged_reads"
+fastq_dir=$(realpath "$fastq_dir")
+
 out_dir="1_QC"
+out_dir=$(realpath "$out_dir")
+
 mkdir --parents "$out_dir"
 cd "$out_dir"
 

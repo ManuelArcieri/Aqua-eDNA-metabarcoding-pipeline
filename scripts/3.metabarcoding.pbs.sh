@@ -27,7 +27,8 @@ blast_database="BLAST-North-Sea/12S/MIDORI2_UNIQ_NUC_GB261_srRNA"
 taxonomy_dir="MIDORI2-GenBank261/QIIME/taxonomy"
 taxonomy_file="$taxonomy_dir/expanded_ncbi_taxonomy.tsv"
 
-blast_taxonomy_script="scripts/taxonomy_assignment_BLAST.py"
+blast_script_dir="scripts"
+blast_assign_script="$blast_script_dir/taxonomy_assignment_BLAST.py"
 
 # ------------------------------------------------------------------
 
@@ -177,7 +178,7 @@ echo "$library: BLAST query executed"
 
 # Refine BLAST results
 python3 \
-"$blast_taxonomy_script" \
+"$blast_assign_script" \
 --hits_to_consider 5 \
 --length_percentage 0.97 \
 --percent_sway 0.5 \
