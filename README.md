@@ -106,6 +106,8 @@ All the steps are merged into a single script, [make-blast-database.pbs.sh](scri
 5. Download the latest NCBI taxonomy dump and prepare it for later usage.
 6. Make a BLAST database from the filtered FASTA file and taxa IDs.
 
+---------------------------------------------------
+
 ### 4. Preparing the adapter files for Cutadapt
 
 - **Tool**: [Cutadapt](https://cutadapt.readthedocs.io/en/stable/guide.html#demultiplexing)
