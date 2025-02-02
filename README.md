@@ -9,10 +9,10 @@ For each step, you will find an overview, a link to a full Bash or R script, and
 ### Use case
 
 This pipeline was developed in collaboration with the [National Institute of Aquatic Resources](https://www.aqua.dtu.dk/english/) (DTU Aqua).
-It was used as part of the Master's thesis project: "[Monitoring offshore biodiversity through the collection of eDNA using an autonomous ecogenomic sensor](https://rawcdn.githack.com/ManuelArcieri/Aqua-eDNA-metabarcoding-pipeline/main/sample_data/Thesis.pdf)", by Manuel Arcieri.
+It was used as part of the Master's thesis project: "[Monitoring offshore biodiversity through the collection of eDNA using an autonomous ecogenomic sensor](https://rawcdn.githack.com/ManuelArcieri/Aqua-eDNA-metabarcoding-pipeline/84e38fa7dafbbd5e82263471b6c570ba85080f84/sample_data/Thesis.pdf)", by Manuel Arcieri.
 
 The sample data contains information from a campaign conducted by DTU Aqua in the North Sea (2019).
-Water samples were collected from several sites and analysed for taxonomic assignment of bony fish. The [thesis](https://rawcdn.githack.com/ManuelArcieri/Aqua-eDNA-metabarcoding-pipeline/main/sample_data/Thesis.pdf) provides more details.
+Water samples were collected from several sites and analysed for taxonomic assignment of bony fish. The [thesis](https://rawcdn.githack.com/ManuelArcieri/Aqua-eDNA-metabarcoding-pipeline/84e38fa7dafbbd5e82263471b6c570ba85080f84/sample_data/Thesis.pdf) provides more details.
 
 ## I. Preliminary steps
 
