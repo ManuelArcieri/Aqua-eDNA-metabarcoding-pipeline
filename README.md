@@ -1,6 +1,23 @@
-# Aqua-eDNA-metabarcoding-pipeline
+# eDNA metabarcoding pipeline
+
+This repository collects scripts and instructions useful for performing metabarcoding analyses from environmental DNA (eDNA).
+Paired-end FASTQ reads will be clustered in OTUs and assigned to the most likely taxonomic group.
+The data can then be plotted and studied to infer more specific trends.
+
+For each step, you will find an overview, a link to a full Bash or R script, and, if relevant, examples of what you will obtain.
+
+### Use case
+
+This pipeline was developed in collaboration with the [National Institute of Aquatic Resources](https://www.aqua.dtu.dk/english/) ([DTU Aqua](https://www.aqua.dtu.dk/english/)).
+It was used as part of the Master's thesis project: "[Monitoring offshore biodiversity through the collection of eDNA using an autonomous ecogenomic sensor](sample_data/Thesis.pdf)", by Manuel Arcieri.
+
+The sample data contains information from a campaign conducted by DTU Aqua in the North Sea (2019).
+Water samples were collected from several sites and analysed for taxonomic assignment of bony fish. The [thesis](sample_data/Thesis.pdf) provides more details.
 
 ## I. Preliminary steps
+
+Before you can analyse your samples, you have to define a reference database for taxonomic assignment.
+Custom databases can be more time-consuming to create, but they can provide more pertinent results.
 
 ### 1. Taxonomy
 
@@ -137,6 +154,8 @@ F/FF6FAFF//F/FFFFF6FFFFFFAFF/F/
 ```
 
 ## II. Metabarcoding and OTU formation
+
+Once you have defined your taxonomic target group, you can proceed with the metabarcoding analysis.
 
 ### 1. Merge paired-end reads
 
@@ -324,3 +343,19 @@ python3 \
 
 ## III. Data analysis and plots
 
+The computationally intensive part of the pipeline has now ended. The results can be further refined to improve readability and to plot the main features of the dataset.
+The following steps can be run on a personal computer with [R](https://www.r-project.org) installed.
+
+**(To be added...)**
+
+## Acknowledgements
+
+The bulk of the code was written by Manuel Arcieri, former Master's student at the Technical University of Denmark (DTU), as part of his thesis project.
+
+I would also like to thank Sara Maggini (DTU Aqua) and Magnus Wulff Jacobsen (DTU Aqua) for their precious help.
+
+If you have any questions, you can write to Manuel Arcieri at `manuel.arcieri@outlook.com`.
+
+## Code usage
+
+You are free to copy, modify, and distribute all the code from this repository as described in the [license](LICENSE).
